@@ -12,10 +12,12 @@ but WITHOUT ANY WARRANTY.
 #include <iostream>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
+#include "object.h"
 
 #include "Renderer.h"
 
 Renderer *g_Renderer = NULL;
+Objects *g_Objects = NULL;
 
 void RenderScene(void)
 {
@@ -23,8 +25,8 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-
+	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
+	g_Objects->Render(*g_Renderer);
 	glutSwapBuffers();
 }
 
@@ -73,6 +75,7 @@ int main(int argc, char **argv)
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
+	g_Objects = new Objects(0, 0, 0, 10, 0, 0, 0, 1);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
