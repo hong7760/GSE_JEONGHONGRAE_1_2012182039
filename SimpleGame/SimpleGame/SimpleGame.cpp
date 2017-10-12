@@ -18,6 +18,8 @@ but WITHOUT ANY WARRANTY.
 
 Renderer *g_Renderer = NULL;
 Objects *g_Objects = NULL;
+bool g_left_mouse = false;
+float g_x, g_y;
 
 void RenderScene(void)
 {
@@ -37,6 +39,28 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		g_left_mouse = true;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+	{
+		if (g_left_mouse && g_Objects->m_active == false)
+		{
+			g_left_mouse = false;
+			g_Objects->ActiveOn(true);
+			g_Objects->Setposition(x - 250, 250 - y, 0);
+		}
+	}
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+		g_left_mouse = true;
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+	{
+		if (g_left_mouse)
+		{
+			g_left_mouse = false;
+			g_Objects->ActiveOn(false);
+			g_Objects->Setposition(x - 250, 250 - y, 0);
+		}
+	}
 	RenderScene();
 }
 
@@ -75,7 +99,7 @@ int main(int argc, char **argv)
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
-	g_Objects = new Objects(0, 0, 0, 10, 0, 0, 0, 1);
+	g_Objects = new Objects(false, 0, 0, 0, 30, 0, 0, 0, 1,5,6,0);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
