@@ -13,11 +13,12 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 #include "object.h"
+#include "SceneMgr.h"
 
 #include "Renderer.h"
 
 Renderer *g_Renderer = NULL;
-Objects *g_Objects = NULL;
+SceneMgr *g_SceneMgr = NULL;
 bool g_left_mouse = false;
 float g_x, g_y;
 
@@ -28,7 +29,7 @@ void RenderScene(void)
 
 	// Renderer Test
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	g_Objects->Render(*g_Renderer);
+	g_SceneMgr->Update(g_Renderer);
 	glutSwapBuffers();
 }
 
@@ -43,22 +44,9 @@ void MouseInput(int button, int state, int x, int y)
 		g_left_mouse = true;
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
-		if (g_left_mouse && g_Objects->m_active == false)
-		{
-			g_left_mouse = false;
-			g_Objects->ActiveOn(true);
-			g_Objects->Setposition(x - 250, 250 - y, 0);
-		}
-	}
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-		g_left_mouse = true;
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
-	{
 		if (g_left_mouse)
 		{
-			g_left_mouse = false;
-			g_Objects->ActiveOn(false);
-			g_Objects->Setposition(x - 250, 250 - y, 0);
+			g_SceneMgr->AddObject(x - 250, 250 - y, 0, 10);
 		}
 	}
 	RenderScene();
@@ -99,7 +87,7 @@ int main(int argc, char **argv)
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
-	g_Objects = new Objects(false, 0, 0, 0, 30, 0, 0, 0, 1,5,6,0);
+	g_SceneMgr = new SceneMgr();
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -110,7 +98,7 @@ int main(int argc, char **argv)
 	glutMainLoop();
 
 	delete g_Renderer;
-
+	delete g_SceneMgr;
     return 0;
 }
 

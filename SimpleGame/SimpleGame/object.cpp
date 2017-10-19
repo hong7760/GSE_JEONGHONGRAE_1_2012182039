@@ -3,8 +3,9 @@
 #include "object.h"
 #include "Renderer.h"
 
-Objects::Objects() : m_pos(0,0,0), color(0,0,0,1), m_vector3(0,0,0)
+Objects::Objects() : m_pos(0,0,0), color(1,1,1,1), m_vector3(0,0,0)
 {
+	m_active = false;
 	size = 10;
 }
 
@@ -62,4 +63,21 @@ void Objects::ColiderCheck()
 void Objects::ActiveOn(bool active)
 {
 	m_active = active;
+}
+
+bool Objects::collision(float3 target, float scale)
+{
+	if (m_pos.x + size / 2 > target.x - scale / 2 && m_pos.x - size / 2 < target.x + scale / 2 &&
+		m_pos.y + size / 2 > target.y - scale / 2 && m_pos.y - size / 2 < target.y + scale / 2)
+		return true;
+	else
+		return false;
+}
+
+void Objects::SetColor(float r, float g, float b, float a)
+{
+	color.x = r;
+	color.y = g;
+	color.z = b;
+	color.w = a;
 }

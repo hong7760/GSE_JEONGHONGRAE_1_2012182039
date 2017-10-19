@@ -47,7 +47,11 @@ public:
 
 	void Setposition(float x, float y, float z);
 
+	void SetColor(float r, float g, float b, float a);
+
 	void ColiderCheck();
 
 	void ActiveOn(bool active);
+
+	bool collision(float3 target, float scale);
 };
