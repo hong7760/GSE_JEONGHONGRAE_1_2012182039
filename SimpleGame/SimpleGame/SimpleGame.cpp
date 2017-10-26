@@ -17,7 +17,6 @@ but WITHOUT ANY WARRANTY.
 
 #include "Renderer.h"
 
-Renderer *g_Renderer = NULL;
 SceneMgr *g_SceneMgr = NULL;
 bool g_left_mouse = false;
 float g_x, g_y;
@@ -29,7 +28,7 @@ void RenderScene(void)
 
 	// Renderer Test
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	g_SceneMgr->Update(g_Renderer);
+	g_SceneMgr->Update();
 	glutSwapBuffers();
 }
 
@@ -82,12 +81,11 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
-	g_SceneMgr = new SceneMgr();
+	//if (!g_Renderer->IsInitialized())
+	//{
+	//	std::cout << "Renderer could not be initialized.. \n";
+	//}
+	g_SceneMgr = new SceneMgr(500, 500);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -97,7 +95,6 @@ int main(int argc, char **argv)
 
 	glutMainLoop();
 
-	delete g_Renderer;
 	delete g_SceneMgr;
     return 0;
 }

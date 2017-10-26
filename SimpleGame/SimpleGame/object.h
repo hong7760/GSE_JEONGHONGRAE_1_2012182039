@@ -15,6 +15,14 @@ typedef struct float3
 		z = z + number.z;
 		return float3(x, y, z);
 	}
+	
+	float3 operator*(const float& number)
+	{
+		x = x * number;
+		y = y * number;
+		z = z * number;
+		return float3(x, y, z);
+	}
 }float3, vector3;
 
 struct float4
@@ -34,6 +42,8 @@ public:
 	float4 color;
 	float size;
 
+	float m_life;
+
 	Objects();
 	Objects(bool active, float x, float y, float z, float scale, float r, float g, float b, float a, float vectorX = 0, float vectorY = 0, float vectorZ = 0);
 	/*Objects(float x, float y,float z, float scale, float r, float g, float b, float a);*/
@@ -41,7 +51,7 @@ public:
 
 	void Render(Renderer& g_Renderer);
 
-	void Update();
+	void Update(float time);
 
 	void Setvector(float vectorX, float vectorY, float vectorZ);
 
@@ -49,7 +59,7 @@ public:
 
 	void SetColor(float r, float g, float b, float a);
 
-	void ColiderCheck();
+	void ColiderCheck(float time);
 
 	void ActiveOn(bool active);
 
