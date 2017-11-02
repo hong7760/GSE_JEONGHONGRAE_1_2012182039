@@ -6,20 +6,42 @@
 Objects::Objects() : m_pos(0,0,0), color(1,1,1,1), m_vector3(0,0,0)
 {
 	m_active = false;
-	size = 10;
+	size = 0;
 }
 
-Objects::Objects(bool active, float x, float y, float z, float scale, float r, float g, float b, float a, float vectorX , float vectorY , float vectorZ) :
-	m_pos(x, y, z), color(r, g, b, a), m_vector3(vectorX, vectorY, vectorZ)
+Objects::Objects(int type, bool active, float x, float y, float z, float vectorX, float vectorY, float vectorZ) :
+	m_type(type), m_pos(x, y, z), m_vector3(vectorX, vectorY, vectorZ), color(0, 0, 0, 1), size(10)
 {
-	m_life = 10.0f;
-	size = scale;
 	m_active = active;
+	if (type == OBJECT_BUILDING)
+	{
+		m_life = 500.0f;
+		size = 50;
+		color = float4(1, 1, 0, 1);
+	}
+	else if (type == OBJECT_CHARACTER)
+	{
+		m_life = 10.0f;
+		color = float4(1, 1, 1, 1);
+		size = 10;
+	}
+	else if (type == OBJECT_BULLET)
+	{
+		m_life = 20.0f;
+		color = float4(1, 0, 0, 1);
+		size = 2;
+	}
+	else if (type == OBJECT_ARROW)
+	{
+		m_life = 10.0f;
+		color = float4(0, 1, 0, 1);
+		size = 2;
+	}
 }
 
 Objects::~Objects()
 {
-
+	m_active = false;
 }
 
 void Objects::Render(Renderer& g_Renderer)
@@ -33,14 +55,13 @@ void Objects::Update(float time)
 	if (m_active)
 	{
 		ColiderCheck(time);
+		if (m_life <= 0)
+			m_active = false;
 		/*m_pos += m_vector3 * (time * 0.001f);*/
 		m_pos.x = m_pos.x + (m_vector3.x * time * 0.001f);
 		m_pos.y = m_pos.y + (m_vector3.y * time * 0.001f);
 
-		m_life -= time * 0.001f;
 	}
-	if (m_life <= 0)
-		ActiveOn(false);
 }
 
 void Objects::Setvector(float vectorX, float vectorY, float vectorZ)

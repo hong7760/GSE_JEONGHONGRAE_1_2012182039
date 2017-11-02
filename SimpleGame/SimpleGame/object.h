@@ -1,5 +1,8 @@
 #pragma once
+#include "SceneMgr.h"
 class Renderer;
+
+
 
 typedef struct float3
 {
@@ -31,6 +34,16 @@ struct float4
 	float4(float a, float b, float c, float d) {
 		x = a; y = b; z = c; w = d;
 	}
+
+	float4 operator=(const float4& number)
+	{
+		x = number.x;
+		y = number.y;
+		z = number.z;
+		w = number.w;
+
+		return float4(x, y, z, w);
+	}
 };
 
 class Objects
@@ -44,8 +57,10 @@ public:
 
 	float m_life;
 
+	int m_type;
+
 	Objects();
-	Objects(bool active, float x, float y, float z, float scale, float r, float g, float b, float a, float vectorX = 0, float vectorY = 0, float vectorZ = 0);
+	Objects(int type, bool active, float x, float y, float z, float vectorX = 0, float vectorY = 0, float vectorZ = 0);
 	/*Objects(float x, float y,float z, float scale, float r, float g, float b, float a);*/
 	~Objects();
 

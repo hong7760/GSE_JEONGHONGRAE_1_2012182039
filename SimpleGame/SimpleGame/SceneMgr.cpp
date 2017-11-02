@@ -2,22 +2,26 @@
 #include "SceneMgr.h"
 #include <random>
 
-SceneMgr::SceneMgr(int x, int y) 
+SceneMgr::SceneMgr(int x, int y)
 {
-	m_currentCount = 0;
+	m_currentCount = 1;
+	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
-	m_time_a = (float)timeGetTime();
+
+	Objects * newobject = new Objects(OBJECT_BUILDING, true, 0,0,0, 0, 0, 0);
+	m_objects[0] = newobject;
+
 }
 
 SceneMgr::~SceneMgr()
 {
 }
 
-void SceneMgr::AddObject(float x, float y, float z, float size)
+void SceneMgr::AddObject(float x, float y, float z)
 {
 	if (m_currentCount < MAX_OBJECTS_COUNT)
 	{
-		Objects * newobject = new Objects(true, x, y, z, size, 1, 1, 1, 1, rand() % 50 - 2, rand() % 50 - 2, 0);
+		Objects * newobject = new Objects(OBJECT_CHARACTER, true, x, y, z, rand() % 50 - 2, rand() % 50 - 2, 0);
 
 		for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
 		{
@@ -38,18 +42,48 @@ void SceneMgr::AddObject(float x, float y, float z, float size)
 
 void SceneMgr::Collion()
 {
-	for(int i = 0; i < m_currentCount; i++)
-		for (int j = 0; j < m_currentCount; j++)
+	for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
+		if (m_objects[i] && m_objects[i]->m_active)
 		{
-			if (i == j)
-				continue;
-			else if (m_objects[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
+			for (int j = 0; j < MAX_OBJECTS_COUNT; j++)
 			{
-				m_objects[i]->SetColor(1, 0, 0, 1);
-				break;
+				if (m_objects[j] && m_objects[j]->m_active)
+				{
+					if (i == j)
+						continue;
+					else if (m_objects[i]->collision(m_objects[j]->m_pos, m_objects[j]->size) && m_objects[j]->m_type == OBJECT_BUILDING)
+					{
+						std::cout << "충돌";
+						m_objects[j]->m_life -= m_objects[i]->m_life;
+						m_objects[i]->m_life = 0;
+						break;
+					}
+					else
+						continue;
+					//m_objects[i]->SetColor(1, 1, 1, 1);
+				}
 			}
-			else
-				m_objects[i]->SetColor(1, 1, 1, 1);
+		}
+
+	for (int i = 0; i < MAX_BULLET_COUNT; i++)
+		if (m_bullets[i] && m_bullets[i]->m_active)
+		{
+			for (int j = 0; j < MAX_OBJECTS_COUNT; j++)
+			{
+				if (m_objects[j] && m_objects[j]->m_active)
+				{
+					if (m_bullets[i]->collision(m_objects[j]->m_pos, m_objects[j]->size) && m_objects[j]->m_type == OBJECT_CHARACTER)
+					{
+						std::cout << "충돌";
+						m_objects[j]->m_life -= m_bullets[i]->m_life;
+						m_bullets[i]->m_life = 0;
+						break;
+					}
+					else
+						continue;
+					//m_objects[i]->SetColor(1, 1, 1, 1);
+				}
+			}
 		}
 }
 
@@ -57,8 +91,20 @@ void SceneMgr::Update()
 {
 	m_time_b = (float)timeGetTime();
 	m_deltime = m_time_b - m_time_a;
-	std::cout<< m_deltime;
+	CreatBullet();
+	//std::cout << m_deltime;
 
+	for (int i = 0; i < MAX_BULLET_COUNT; i++)
+		if (m_bullets[i])
+		{
+			m_bullets[i]->Update(m_deltime);
+			m_bullets[i]->Render(*m_renderer);
+			if (!m_bullets[i]->m_active)
+			{
+				m_bullets[i]->~Objects();
+				m_currentbullet--;
+			}
+		}
 
 	for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
 		if (m_objects[i])
@@ -72,6 +118,35 @@ void SceneMgr::Update()
 			}
 		}
 
+	m_bullet_timer += m_deltime;
 	m_time_a = m_time_b;
 	Collion();
+}
+
+void SceneMgr::CreatBullet()
+{
+	for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
+		if (m_objects[i] && m_objects[i]->m_active && m_objects[i]->m_type == OBJECT_BUILDING)
+		{
+			if (m_bullet_timer > 500)
+			{
+				Objects * newobject = new Objects(OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand()%200 - 100, rand()%200 - 100, 0);
+				for (int j = 0; j < MAX_BULLET_COUNT; j++)
+				{
+					if (!m_bullets[j])
+					{
+						m_bullets[j] = newobject;
+						break;
+					}
+					else if(!m_bullets[j]->m_active)
+					{
+						m_bullets[j] = newobject;
+						break;
+					}
+				}
+				m_bullet_timer = 0;
+				m_currentbullet += 1;
+				
+			}
+		}
 }

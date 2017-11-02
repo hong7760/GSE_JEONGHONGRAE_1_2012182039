@@ -4,17 +4,25 @@
 #include "Renderer.h"
 #include <Windows.h>
 
-const int MAX_OBJECTS_COUNT = 10;
+const int MAX_OBJECTS_COUNT = 11;
+const int MAX_BULLET_COUNT = 100;
+const int OBJECT_BUILDING = 0;
+const int OBJECT_CHARACTER = 1;
+const int OBJECT_BULLET = 2;
+const int OBJECT_ARROW = 3;
+class Objects;
 
 class SceneMgr
 {
 private:
 	Objects *m_objects[MAX_OBJECTS_COUNT];
+	Objects *m_bullets[MAX_BULLET_COUNT];
 	int m_currentCount;
+	int m_currentbullet;
 	Renderer *m_renderer;
 
+	float m_bullet_timer;
 	float m_time_a, m_time_b, m_deltime;
-	//elapsed time == rendersecen 1번째 불렸다 = time get time 으로 하나 받아옴 => A renderSecen 두번째 B  => B-A  = elapsed time
 public:
 	SceneMgr(int x, int y);
 
@@ -24,6 +32,7 @@ public:
 
 	void Update(); // 오브잭트를 update 해주는 함수 (Renderer 포함)
 
-	void AddObject(float x, float y, float z, float size); // 추가할 오브잭트(속도는 -10~10사이의 랜덤값으로 설정해놓음)
+	void AddObject(float x, float y, float z); // 추가할 오브잭트(속도는 -10~10사이의 랜덤값으로 설정해놓음)
 
+	void CreatBullet();
 };

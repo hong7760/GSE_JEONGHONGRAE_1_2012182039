@@ -1,9 +1,7 @@
 /*
 Copyright 2017 Lee Taek Hee (Korea Polytech University)
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the What The Hell License. Do it plz.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY.
 */
@@ -45,7 +43,8 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		if (g_left_mouse)
 		{
-			g_SceneMgr->AddObject(x - 250, 250 - y, 0, 10);
+			g_SceneMgr->AddObject(x - 250, 250 - y, 0);
+			g_left_mouse = false;
 		}
 	}
 	RenderScene();
@@ -96,6 +95,5 @@ int main(int argc, char **argv)
 	glutMainLoop();
 
 	delete g_SceneMgr;
-    return 0;
+	return 0;
 }
-
