@@ -89,7 +89,7 @@ void SceneMgr::Collion()
 
 void SceneMgr::Update()
 {
-	m_time_b = (float)timeGetTime();
+	m_time_b = timeGetTime();
 	m_deltime = m_time_b - m_time_a;
 	CreatBullet();
 	//std::cout << m_deltime;

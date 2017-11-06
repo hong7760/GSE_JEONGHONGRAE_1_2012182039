@@ -22,7 +22,8 @@ private:
 	Renderer *m_renderer;
 
 	float m_bullet_timer;
-	float m_time_a, m_time_b, m_deltime;
+	DWORD m_time_a, m_time_b;
+	float m_deltime;
 public:
 	SceneMgr(int x, int y);
 
