@@ -85,6 +85,29 @@ void SceneMgr::Collion()
 				}
 			}
 		}
+
+	for (int i = 0; i< MAX_OBJECTS_COUNT; i++)
+		for (int j = 0; j < MAX_ARROW_COUNT; j++)
+			for (int k = 0; k<MAX_OBJECTS_COUNT; k++)
+			{
+				if (m_arrows[i][j] && m_arrows[i][j]->m_active)
+				{
+					if (m_objects[k] && m_objects[k]->m_active)
+					{
+						if (i == k)
+							continue;
+						else if (m_arrows[i][j]->collision(m_objects[k]->m_pos, m_objects[k]->size))
+						{
+							std::cout << "Ãæµ¹";
+							m_objects[k]->m_life -= m_arrows[i][j]->m_life;
+							m_arrows[i][j]->m_life = 0;
+							break;
+						}
+						else
+							continue;
+					}
+				}
+			}
 }
 
 void SceneMgr::Update()
@@ -118,6 +141,20 @@ void SceneMgr::Update()
 			}
 		}
 
+	for (int i = 0; i< MAX_OBJECTS_COUNT; i++)
+		for (int j = 0; j < MAX_ARROW_COUNT; j++)
+		{
+			if (m_arrows[i][j])
+			{
+				m_arrows[i][j]->Update(m_deltime);
+				m_arrows[i][j]->Render(*m_renderer);
+				if (m_arrows[i][j]->m_active == false)
+				{
+					m_arrows[i][j]->~Objects();
+				}
+			}
+		}
+
 	m_bullet_timer += m_deltime;
 	m_time_a = m_time_b;
 	Collion();
@@ -125,12 +162,13 @@ void SceneMgr::Update()
 
 void SceneMgr::CreatBullet()
 {
-	for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
+	for (int i = 0; i < MAX_OBJECTS_COUNT; i++) {
 		if (m_objects[i] && m_objects[i]->m_active && m_objects[i]->m_type == OBJECT_BUILDING)
 		{
-			if (m_bullet_timer > 500)
+			if (m_objects[i]->GetCooltime() > 0.5f)
 			{
-				Objects * newobject = new Objects(OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand()%200 - 100, rand()%200 - 100, 0);
+				m_objects[i]->SetCooltime();
+				Objects * newobject = new Objects(OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0);
 				for (int j = 0; j < MAX_BULLET_COUNT; j++)
 				{
 					if (!m_bullets[j])
@@ -138,15 +176,34 @@ void SceneMgr::CreatBullet()
 						m_bullets[j] = newobject;
 						break;
 					}
-					else if(!m_bullets[j]->m_active)
+					else if (!m_bullets[j]->m_active)
 					{
 						m_bullets[j] = newobject;
 						break;
 					}
 				}
-				m_bullet_timer = 0;
-				m_currentbullet += 1;
-				
 			}
 		}
+		else if (m_objects[i] && m_objects[i]->m_active && m_objects[i]->m_type == OBJECT_CHARACTER)
+		{
+			if (m_objects[i]->GetCooltime() > 0.5f)
+			{
+				m_objects[i]->SetCooltime();
+				Objects * newobject = new Objects(OBJECT_ARROW, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0);
+				for (int j = 0; j < MAX_ARROW_COUNT; j++)
+				{
+					if (!m_arrows[i][j])
+					{
+						m_arrows[i][j] = newobject;
+						break;
+					}
+					else if (!m_arrows[i][j]->m_active)
+					{
+						m_arrows[i][j] = newobject;
+						break;
+					}
+				}
+			}
+		}
+	}
 }

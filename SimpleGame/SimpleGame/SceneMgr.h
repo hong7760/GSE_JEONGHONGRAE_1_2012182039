@@ -6,6 +6,7 @@
 
 const int MAX_OBJECTS_COUNT = 11;
 const int MAX_BULLET_COUNT = 100;
+const int MAX_ARROW_COUNT = 10;
 const int OBJECT_BUILDING = 0;
 const int OBJECT_CHARACTER = 1;
 const int OBJECT_BULLET = 2;
@@ -17,6 +18,7 @@ class SceneMgr
 private:
 	Objects *m_objects[MAX_OBJECTS_COUNT];
 	Objects *m_bullets[MAX_BULLET_COUNT];
+	Objects *m_arrows[MAX_OBJECTS_COUNT][MAX_ARROW_COUNT];
 	int m_currentCount;
 	int m_currentbullet;
 	Renderer *m_renderer;

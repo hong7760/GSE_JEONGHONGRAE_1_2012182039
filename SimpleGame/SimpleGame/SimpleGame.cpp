@@ -17,7 +17,6 @@ but WITHOUT ANY WARRANTY.
 
 SceneMgr *g_SceneMgr = NULL;
 bool g_left_mouse = false;
-float g_x, g_y;
 
 void RenderScene(void)
 {

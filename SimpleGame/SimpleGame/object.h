@@ -59,6 +59,8 @@ public:
 
 	int m_type;
 
+	float ArrowCooltime;
+
 	Objects();
 	Objects(int type, bool active, float x, float y, float z, float vectorX = 0, float vectorY = 0, float vectorZ = 0);
 	/*Objects(float x, float y,float z, float scale, float r, float g, float b, float a);*/
@@ -79,4 +81,10 @@ public:
 	void ActiveOn(bool active);
 
 	bool collision(float3 target, float scale);
+
+	float GetCooltime();
+
+	void SetCooltime();
+
+	void SetStandardColor();
 };

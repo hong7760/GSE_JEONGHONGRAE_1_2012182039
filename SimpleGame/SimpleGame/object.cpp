@@ -58,6 +58,7 @@ void Objects::Update(float time)
 		if (m_life <= 0)
 			m_active = false;
 		/*m_pos += m_vector3 * (time * 0.001f);*/
+		ArrowCooltime += (time * 0.001f);
 		m_pos.x = m_pos.x + (m_vector3.x * time * 0.001f);
 		m_pos.y = m_pos.y + (m_vector3.y * time * 0.001f);
 
@@ -111,4 +112,30 @@ void Objects::SetColor(float r, float g, float b, float a)
 	color.y = g;
 	color.z = b;
 	color.w = a;
+}
+
+float Objects::GetCooltime()
+{
+	return ArrowCooltime;
+}
+
+void Objects::SetCooltime()
+{
+	ArrowCooltime = 0;
+}
+
+void Objects::SetStandardColor()
+{
+	if (m_type == OBJECT_BUILDING)
+		color = float4(1, 1, 0, 1);
+
+	else if (m_type == OBJECT_CHARACTER)
+		color = float4(1, 1, 1, 1);
+
+	else if (m_type == OBJECT_BULLET)
+		color = float4(1, 0, 0, 1);
+
+	else if (m_type == OBJECT_ARROW)
+		color = float4(0, 1, 0, 1);
+
 }
