@@ -49,11 +49,14 @@ struct float4
 class Objects
 {
 public:
+	Renderer *m_renderer;
 	bool m_active;
 	float3 m_pos;
 	vector3 m_vector3;
 	float4 color;
 	float size;
+
+	int image_id;
 
 	float m_life;
 
@@ -62,7 +65,7 @@ public:
 	float ArrowCooltime;
 
 	Objects();
-	Objects(int type, bool active, float x, float y, float z, float vectorX = 0, float vectorY = 0, float vectorZ = 0);
+	Objects(int type, bool active, float x, float y, float z, float vectorX , float vectorY , float vectorZ , int image);
 	/*Objects(float x, float y,float z, float scale, float r, float g, float b, float a);*/
 	~Objects();
 

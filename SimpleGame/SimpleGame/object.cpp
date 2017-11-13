@@ -9,9 +9,10 @@ Objects::Objects() : m_pos(0,0,0), color(1,1,1,1), m_vector3(0,0,0)
 	size = 0;
 }
 
-Objects::Objects(int type, bool active, float x, float y, float z, float vectorX, float vectorY, float vectorZ) :
-	m_type(type), m_pos(x, y, z), m_vector3(vectorX, vectorY, vectorZ), color(0, 0, 0, 1), size(10)
+Objects::Objects(int type, bool active, float x, float y, float z, float vectorX, float vectorY, float vectorZ,int image) :
+	m_type(type), m_pos(x, y, z), m_vector3(vectorX, vectorY, vectorZ), color(0, 0, 0, 1), size(10), image_id(image)
 {
+
 	m_active = active;
 	if (type == OBJECT_BUILDING)
 	{
@@ -47,7 +48,12 @@ Objects::~Objects()
 void Objects::Render(Renderer& g_Renderer)
 {
 	if (m_active)
-		g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w);
+	{
+		if (m_type == OBJECT_BUILDING)
+			g_Renderer.DrawTexturedRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, image_id);
+		else
+			g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w);
+	}
 }
 
 void Objects::Update(float time)

@@ -7,10 +7,10 @@ SceneMgr::SceneMgr(int x, int y)
 	m_currentCount = 1;
 	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
+	building_image = m_renderer->CreatePngTexture(".\\Resorce\\castle.png");
 
-	Objects * newobject = new Objects(OBJECT_BUILDING, true, 0,0,0, 0, 0, 0);
+	Objects * newobject = new Objects(OBJECT_BUILDING, true, 0, 0, 0, 0, 0, 0, building_image);
 	m_objects[0] = newobject;
-
 }
 
 SceneMgr::~SceneMgr()
@@ -21,7 +21,7 @@ void SceneMgr::AddObject(float x, float y, float z)
 {
 	if (m_currentCount < MAX_OBJECTS_COUNT)
 	{
-		Objects * newobject = new Objects(OBJECT_CHARACTER, true, x, y, z, rand() % 50 - 2, rand() % 50 - 2, 0);
+		Objects * newobject = new Objects(OBJECT_CHARACTER, true, x, y, z, rand() % 50 - 2, rand() % 50 - 2, 0, building_image);
 
 		for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
 		{
@@ -138,6 +138,12 @@ void SceneMgr::Update()
 			{
 				m_objects[i]->~Objects();
 				m_currentCount -= 1;
+				for (int j = 0; j < MAX_ARROW_COUNT; j++)
+					if (m_arrows[i][j] && m_arrows[i][j]->m_active == true)
+					{
+						m_arrows[i][j]->~Objects();
+						m_arrows[i][j]->ActiveOn(false);
+					}
 			}
 		}
 
@@ -168,7 +174,7 @@ void SceneMgr::CreatBullet()
 			if (m_objects[i]->GetCooltime() > 0.5f)
 			{
 				m_objects[i]->SetCooltime();
-				Objects * newobject = new Objects(OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0);
+				Objects * newobject = new Objects(OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0, building_image);
 				for (int j = 0; j < MAX_BULLET_COUNT; j++)
 				{
 					if (!m_bullets[j])
@@ -189,7 +195,7 @@ void SceneMgr::CreatBullet()
 			if (m_objects[i]->GetCooltime() > 0.5f)
 			{
 				m_objects[i]->SetCooltime();
-				Objects * newobject = new Objects(OBJECT_ARROW, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0);
+				Objects * newobject = new Objects(OBJECT_ARROW, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0, building_image);
 				for (int j = 0; j < MAX_ARROW_COUNT; j++)
 				{
 					if (!m_arrows[i][j])

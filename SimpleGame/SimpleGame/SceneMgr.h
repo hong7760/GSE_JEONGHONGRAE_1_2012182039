@@ -23,6 +23,7 @@ private:
 	int m_currentbullet;
 	Renderer *m_renderer;
 
+	int building_image;
 	float m_bullet_timer;
 	DWORD m_time_a, m_time_b;
 	float m_deltime;
