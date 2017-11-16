@@ -9,33 +9,42 @@ Objects::Objects() : m_pos(0,0,0), color(1,1,1,1), m_vector3(0,0,0)
 	size = 0;
 }
 
-Objects::Objects(int type, bool active, float x, float y, float z, float vectorX, float vectorY, float vectorZ,int image) :
-	m_type(type), m_pos(x, y, z), m_vector3(vectorX, vectorY, vectorZ), color(0, 0, 0, 1), size(10), image_id(image)
+Objects::Objects(int team, int type, bool active, float x, float y, float z, float vectorX, float vectorY, float vectorZ,int image) :
+	m_team(team), m_type(type), m_pos(x, y, z), m_vector3(vectorX, vectorY, vectorZ), color(0, 0, 0, 1), size(10), image_id(image)
 {
 
 	m_active = active;
 	if (type == OBJECT_BUILDING)
 	{
 		m_life = 500.0f;
-		size = 50;
+		size = 100;
 		color = float4(1, 1, 0, 1);
 	}
 	else if (type == OBJECT_CHARACTER)
 	{
 		m_life = 10.0f;
-		color = float4(1, 1, 1, 1);
+		if (m_team == 1)
+			color = float4(1, 0, 0, 1);
+		else
+			color = float4(0, 0, 1, 1);
 		size = 10;
 	}
 	else if (type == OBJECT_BULLET)
 	{
 		m_life = 20.0f;
-		color = float4(1, 0, 0, 1);
+		if (m_team == 1)
+			color = float4(1, 0, 0, 1);
+		else
+			color = float4(0, 0, 1, 1);
 		size = 2;
 	}
 	else if (type == OBJECT_ARROW)
 	{
 		m_life = 10.0f;
-		color = float4(0, 1, 0, 1);
+		if (m_team == 1)
+			color = float4(0.5, 0.2, 0.7, 1);
+		else
+			color = float4(1, 1, 0, 1);
 		size = 2;
 	}
 }
@@ -92,9 +101,9 @@ void Objects::ColiderCheck(float time)
 	else if(m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) - size/2 < -250)
 		m_vector3.x = -m_vector3.x;
 
-	if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) + size/2 > 250)
+	if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) + size/2 > 400)
 		m_vector3.y = -m_vector3.y;
-	else if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) - size/2 < -250)
+	else if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) - size/2 < -400)
 		m_vector3.y = -m_vector3.y;
 }
 
@@ -144,4 +153,9 @@ void Objects::SetStandardColor()
 	else if (m_type == OBJECT_ARROW)
 		color = float4(0, 1, 0, 1);
 
+}
+
+int Objects::GetTeam()
+{
+	return m_team;
 }

@@ -42,7 +42,7 @@ void MouseInput(int button, int state, int x, int y)
 	{
 		if (g_left_mouse)
 		{
-			g_SceneMgr->AddObject(x - 250, 250 - y, 0);
+			g_SceneMgr->AddObject(x - 250, 400 - y, 0);
 			g_left_mouse = false;
 		}
 	}
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(500, 800);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	//{
 	//	std::cout << "Renderer could not be initialized.. \n";
 	//}
-	g_SceneMgr = new SceneMgr(500, 500);
+	g_SceneMgr = new SceneMgr(500, 800);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);

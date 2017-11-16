@@ -4,13 +4,22 @@
 
 SceneMgr::SceneMgr(int x, int y)
 {
-	m_currentCount = 1;
+	m_currentCount = 0;
 	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
-	building_image = m_renderer->CreatePngTexture(".\\Resorce\\castle.png");
-
-	Objects * newobject = new Objects(OBJECT_BUILDING, true, 0, 0, 0, 0, 0, 0, building_image);
-	m_objects[0] = newobject;
+	
+	for (int i = 0; i < 3; i++) {
+		building_image = m_renderer->CreatePngTexture(".\\Resorce\\castle.png");
+		Objects * newobject = new Objects(1, OBJECT_BUILDING, true, 200 - i*200, 300, 0, 0, 0, 0, building_image);
+		m_objects[m_currentCount] = newobject;
+		m_currentCount++;
+	}
+	for (int i = 0; i < 3; i++) {
+		building_image = m_renderer->CreatePngTexture(".\\Resorce\\cube.png");
+		Objects * newobject = new Objects(2, OBJECT_BUILDING, true, 200 - i * 200, -300, 0, 0, 0, 0, building_image);
+		m_objects[m_currentCount] = newobject;
+		m_currentCount++;
+	}
 }
 
 SceneMgr::~SceneMgr()
@@ -19,43 +28,45 @@ SceneMgr::~SceneMgr()
 
 void SceneMgr::AddObject(float x, float y, float z)
 {
-	if (m_currentCount < MAX_OBJECTS_COUNT)
-	{
-		Objects * newobject = new Objects(OBJECT_CHARACTER, true, x, y, z, rand() % 50 - 2, rand() % 50 - 2, 0, building_image);
+	int vecx, vecy;
+	vecx = rand() % CHARACTER_SPEED;
+	vecy = CHARACTER_SPEED - vecx;
+	Objects * newobject = new Objects(2, OBJECT_CHARACTER, true, x, y, z, vecx, vecy, 0, building_image);
 
-		for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
+	if (y < 0 && teamb_cool/1000 > 7.0f) {
+		for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		{
-			if (!m_objects[i])
+			if (!m_character[i])
 			{
-				m_objects[i] = newobject;
+				m_character[i] = newobject;
 				break;
 			}
-			else if (!m_objects[i]->m_active)
+			else if (!m_character[i]->m_active)
 			{
-				m_objects[i] = newobject;
+				m_character[i] = newobject;
 				break;
 			}
 		}
-		m_currentCount += 1;
+		teamb_cool = 0;
 	}
 }
 
 void SceneMgr::Collion()
 {
-	for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
-		if (m_objects[i] && m_objects[i]->m_active)
+	for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
+		if (m_character[i] && m_character[i]->m_active)
 		{
 			for (int j = 0; j < MAX_OBJECTS_COUNT; j++)
 			{
 				if (m_objects[j] && m_objects[j]->m_active)
 				{
-					if (i == j)
+					if (m_character[i]->GetTeam() == m_objects[j]->GetTeam())
 						continue;
-					else if (m_objects[i]->collision(m_objects[j]->m_pos, m_objects[j]->size) && m_objects[j]->m_type == OBJECT_BUILDING)
+					else if (m_character[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
 					{
 						std::cout << "面倒";
-						m_objects[j]->m_life -= m_objects[i]->m_life;
-						m_objects[i]->m_life = 0;
+						m_objects[j]->m_life -= m_character[i]->m_life;
+						m_character[i]->m_life = 0;
 						break;
 					}
 					else
@@ -68,14 +79,14 @@ void SceneMgr::Collion()
 	for (int i = 0; i < MAX_BULLET_COUNT; i++)
 		if (m_bullets[i] && m_bullets[i]->m_active)
 		{
-			for (int j = 0; j < MAX_OBJECTS_COUNT; j++)
+			for (int j = 0; j < MAX_CHARACTER_COUNT; j++)
 			{
-				if (m_objects[j] && m_objects[j]->m_active)
+				if (m_character[j] && m_character[j]->m_active)
 				{
-					if (m_bullets[i]->collision(m_objects[j]->m_pos, m_objects[j]->size) && m_objects[j]->m_type == OBJECT_CHARACTER)
+					if (m_bullets[i]->collision(m_character[j]->m_pos, m_character[j]->size) && m_character[j]->GetTeam() != m_bullets[i]->GetTeam())
 					{
 						std::cout << "面倒";
-						m_objects[j]->m_life -= m_bullets[i]->m_life;
+						m_character[j]->m_life -= m_bullets[i]->m_life;
 						m_bullets[i]->m_life = 0;
 						break;
 					}
@@ -86,34 +97,34 @@ void SceneMgr::Collion()
 			}
 		}
 
-	for (int i = 0; i< MAX_OBJECTS_COUNT; i++)
-		for (int j = 0; j < MAX_ARROW_COUNT; j++)
-			for (int k = 0; k<MAX_OBJECTS_COUNT; k++)
+	for (int i = 0; i < MAX_ARROW_COUNT; i++)
+		if (m_arrows[i] && m_arrows[i]->m_active)
+		{
+			for (int j = 0; j < MAX_CHARACTER_COUNT; j++)
 			{
-				if (m_arrows[i][j] && m_arrows[i][j]->m_active)
+				if (m_character[j] && m_character[j]->m_active)
 				{
-					if (m_objects[k] && m_objects[k]->m_active)
+					if (m_arrows[i]->collision(m_character[j]->m_pos, m_character[j]->size) && m_character[j]->GetTeam() != m_arrows[i]->GetTeam())
 					{
-						if (i == k)
-							continue;
-						else if (m_arrows[i][j]->collision(m_objects[k]->m_pos, m_objects[k]->size))
-						{
-							std::cout << "面倒";
-							m_objects[k]->m_life -= m_arrows[i][j]->m_life;
-							m_arrows[i][j]->m_life = 0;
-							break;
-						}
-						else
-							continue;
+						std::cout << "面倒";
+						m_character[j]->m_life -= m_arrows[i]->m_life;
+						m_arrows[i]->m_life = 0;
+						break;
 					}
+					else
+						continue;
+					//m_objects[i]->SetColor(1, 1, 1, 1);
 				}
 			}
+		}
 }
 
 void SceneMgr::Update()
 {
 	m_time_b = timeGetTime();
 	m_deltime = m_time_b - m_time_a;
+	teama_cool+= m_deltime;
+	teamb_cool += m_deltime;
 	CreatBullet();
 	//std::cout << m_deltime;
 
@@ -129,37 +140,46 @@ void SceneMgr::Update()
 			}
 		}
 
+	for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
+		if (m_character[i])
+		{
+			m_character[i]->Update(m_deltime);
+			m_character[i]->Render(*m_renderer);
+			if (!m_character[i]->m_active)
+				m_character[i]->~Objects();
+		}
+
+	for (int i = 0; i < MAX_ARROW_COUNT; i++)
+		if (m_arrows[i])
+		{
+			m_arrows[i]->Update(m_deltime);
+			m_arrows[i]->Render(*m_renderer);
+			if (!m_arrows[i]->m_active)
+				m_arrows[i]->~Objects();
+		}
+
 	for (int i = 0; i < MAX_OBJECTS_COUNT; i++)
 		if (m_objects[i])
 		{
 			m_objects[i]->Update(m_deltime);
 			m_objects[i]->Render(*m_renderer);
 			if (m_objects[i]->m_active == false)
-			{
 				m_objects[i]->~Objects();
-				m_currentCount -= 1;
-				for (int j = 0; j < MAX_ARROW_COUNT; j++)
-					if (m_arrows[i][j] && m_arrows[i][j]->m_active == true)
-					{
-						m_arrows[i][j]->~Objects();
-						m_arrows[i][j]->ActiveOn(false);
-					}
-			}
 		}
 
-	for (int i = 0; i< MAX_OBJECTS_COUNT; i++)
-		for (int j = 0; j < MAX_ARROW_COUNT; j++)
-		{
-			if (m_arrows[i][j])
-			{
-				m_arrows[i][j]->Update(m_deltime);
-				m_arrows[i][j]->Render(*m_renderer);
-				if (m_arrows[i][j]->m_active == false)
-				{
-					m_arrows[i][j]->~Objects();
-				}
-			}
-		}
+	//for (int i = 0; i< MAX_OBJECTS_COUNT; i++)
+	//	for (int j = 0; j < MAX_ARROW_COUNT; j++)
+	//	{
+	//		if (m_arrows[i][j])
+	//		{
+	//			m_arrows[i][j]->Update(m_deltime);
+	//			m_arrows[i][j]->Render(*m_renderer);
+	//			if (m_arrows[i][j]->m_active == false)
+	//			{
+	//				m_arrows[i][j]->~Objects();
+	//			}
+	//		}
+	//	}
 
 	m_bullet_timer += m_deltime;
 	m_time_a = m_time_b;
@@ -168,13 +188,17 @@ void SceneMgr::Update()
 
 void SceneMgr::CreatBullet()
 {
+	int vecx, vecy;
+
 	for (int i = 0; i < MAX_OBJECTS_COUNT; i++) {
-		if (m_objects[i] && m_objects[i]->m_active && m_objects[i]->m_type == OBJECT_BUILDING)
+		if (m_objects[i] && m_objects[i]->m_active)
 		{
-			if (m_objects[i]->GetCooltime() > 0.5f)
+			if (m_objects[i]->GetCooltime() > 10.0f)
 			{
+				vecx = rand() % BULLET_SPEED;
+				vecy = BULLET_SPEED - vecx;
 				m_objects[i]->SetCooltime();
-				Objects * newobject = new Objects(OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0, building_image);
+				Objects * newobject = new Objects(m_objects[i]->GetTeam(), OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, vecx, vecy, 0, building_image);
 				for (int j = 0; j < MAX_BULLET_COUNT; j++)
 				{
 					if (!m_bullets[j])
@@ -190,26 +214,51 @@ void SceneMgr::CreatBullet()
 				}
 			}
 		}
-		else if (m_objects[i] && m_objects[i]->m_active && m_objects[i]->m_type == OBJECT_CHARACTER)
+	}
+	if (teama_cool/1000 > 5)
+	{
+		vecx = rand() % CHARACTER_SPEED;
+		vecy = CHARACTER_SPEED - vecx;
+		Objects * newobject = new Objects(1, OBJECT_CHARACTER, true, rand()%500 - 250, rand()%400, 0, vecx, -vecy, 0, building_image);
+
+		for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		{
-			if (m_objects[i]->GetCooltime() > 0.5f)
+			if (!m_character[i])
 			{
-				m_objects[i]->SetCooltime();
-				Objects * newobject = new Objects(OBJECT_ARROW, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, rand() % 200 - 100, rand() % 200 - 100, 0, building_image);
+				m_character[i] = newobject;
+				break;
+			}
+			else if (!m_character[i]->m_active)
+			{
+				m_character[i] = newobject;
+				break;
+			}
+		}
+		teama_cool = 0;
+	}
+
+	for(int i = 0; i < MAX_CHARACTER_COUNT; i++)
+		if (m_character[i] && m_character[i]->m_active)
+		{
+			if (m_character[i]->GetCooltime() > 3.0f)
+			{
+				vecx = rand() % ARROW_SPEED;
+				vecy = ARROW_SPEED - vecx;
+				m_character[i]->SetCooltime();
+				Objects * newobject = new Objects(m_character[i]->GetTeam(), OBJECT_ARROW, true, m_character[i]->m_pos.x, m_character[i]->m_pos.y, m_character[i]->m_pos.z, vecx, vecy, 0, building_image);
 				for (int j = 0; j < MAX_ARROW_COUNT; j++)
 				{
-					if (!m_arrows[i][j])
+					if (!m_arrows[j])
 					{
-						m_arrows[i][j] = newobject;
+						m_arrows[j] = newobject;
 						break;
 					}
-					else if (!m_arrows[i][j]->m_active)
+					else if (!m_arrows[j]->m_active)
 					{
-						m_arrows[i][j] = newobject;
+						m_arrows[j] = newobject;
 						break;
 					}
 				}
 			}
 		}
-	}
 }

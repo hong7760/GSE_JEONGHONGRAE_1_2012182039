@@ -55,7 +55,7 @@ public:
 	vector3 m_vector3;
 	float4 color;
 	float size;
-
+	int m_team;
 	int image_id;
 
 	float m_life;
@@ -65,7 +65,7 @@ public:
 	float ArrowCooltime;
 
 	Objects();
-	Objects(int type, bool active, float x, float y, float z, float vectorX , float vectorY , float vectorZ , int image);
+	Objects(int team, int type, bool active, float x, float y, float z, float vectorX , float vectorY , float vectorZ , int image);
 	/*Objects(float x, float y,float z, float scale, float r, float g, float b, float a);*/
 	~Objects();
 
@@ -90,4 +90,6 @@ public:
 	void SetCooltime();
 
 	void SetStandardColor();
+
+	int GetTeam();
 };
