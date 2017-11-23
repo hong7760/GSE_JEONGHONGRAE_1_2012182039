@@ -58,12 +58,12 @@ public:
 	int m_team;
 	int image_id;
 
-	float m_life;
+	float m_life, m_maxlife;
 
 	int m_type;
 
 	float ArrowCooltime;
-
+			
 	Objects();
 	Objects(int team, int type, bool active, float x, float y, float z, float vectorX , float vectorY , float vectorZ , int image);
 	/*Objects(float x, float y,float z, float scale, float r, float g, float b, float a);*/

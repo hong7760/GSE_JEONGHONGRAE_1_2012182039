@@ -8,6 +8,9 @@ SceneMgr::SceneMgr(int x, int y)
 	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
 	
+	character_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\bat.png");
+	character_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\square.png");
+
 	for (int i = 0; i < 3; i++) {
 		building_image = m_renderer->CreatePngTexture(".\\Resorce\\castle.png");
 		Objects * newobject = new Objects(1, OBJECT_BUILDING, true, 200 - i*200, 300, 0, 0, 0, 0, building_image);
@@ -29,11 +32,11 @@ SceneMgr::~SceneMgr()
 void SceneMgr::AddObject(float x, float y, float z)
 {
 	int vecx, vecy;
-	vecx = rand() % CHARACTER_SPEED;
-	vecy = CHARACTER_SPEED - vecx;
-	Objects * newobject = new Objects(2, OBJECT_CHARACTER, true, x, y, z, vecx, vecy, 0, building_image);
+	vecx = rand() % CHARACTER_SPEED - CHARACTER_SPEED/2;
+	vecy = CHARACTER_SPEED - abs(vecx);
+	Objects * newobject = new Objects(2, OBJECT_CHARACTER, true, x, y, z, vecx, vecy, 0, character_image[1]);
 
-	if (y < 0 && teamb_cool/1000 > 7.0f) {
+	if (y < 0 && teamb_cool/1000 > 1.0f) {
 		for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		{
 			if (!m_character[i])
@@ -92,12 +95,29 @@ void SceneMgr::Collion()
 					}
 					else
 						continue;
-					//m_objects[i]->SetColor(1, 1, 1, 1);
+				}
+			}
+			for (int j = 0; j < MAX_OBJECTS_COUNT; j++)
+			{
+				if (m_bullets[j] && m_objects[j]->m_active)
+				{
+					if (m_bullets[i]->GetTeam() == m_objects[j]->GetTeam())
+						continue;
+					else if (m_bullets[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
+					{
+						std::cout << "충돌";
+						m_objects[j]->m_life -= m_bullets[i]->m_life;
+						m_bullets[i]->m_life = 0;
+						break;
+					}
+					else
+						continue;
 				}
 			}
 		}
 
 	for (int i = 0; i < MAX_ARROW_COUNT; i++)
+	{
 		if (m_arrows[i] && m_arrows[i]->m_active)
 		{
 			for (int j = 0; j < MAX_CHARACTER_COUNT; j++)
@@ -113,10 +133,28 @@ void SceneMgr::Collion()
 					}
 					else
 						continue;
+				}
+			}
+			for (int j = 0; j < MAX_OBJECTS_COUNT; j++)
+			{
+				if (m_objects[j] && m_objects[j]->m_active)
+				{
+					if (m_arrows[i]->GetTeam() == m_objects[j]->GetTeam())
+						continue;
+					else if (m_arrows[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
+					{
+						std::cout << "충돌";
+						m_objects[j]->m_life -= m_arrows[i]->m_life;
+						m_arrows[i]->m_life = 0;
+						break;
+					}
+					else
+						continue;
 					//m_objects[i]->SetColor(1, 1, 1, 1);
 				}
 			}
 		}
+	}
 }
 
 void SceneMgr::Update()
@@ -193,10 +231,14 @@ void SceneMgr::CreatBullet()
 	for (int i = 0; i < MAX_OBJECTS_COUNT; i++) {
 		if (m_objects[i] && m_objects[i]->m_active)
 		{
-			if (m_objects[i]->GetCooltime() > 10.0f)
+			if (m_objects[i]->GetCooltime() > 0.5f)
 			{
-				vecx = rand() % BULLET_SPEED;
-				vecy = BULLET_SPEED - vecx;
+				vecx = rand() % BULLET_SPEED - BULLET_SPEED / 2;
+				vecy = BULLET_SPEED - abs(vecx);
+
+				if (m_objects[i]->GetTeam() == 1)
+					vecy = -vecy;
+
 				m_objects[i]->SetCooltime();
 				Objects * newobject = new Objects(m_objects[i]->GetTeam(), OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, vecx, vecy, 0, building_image);
 				for (int j = 0; j < MAX_BULLET_COUNT; j++)
@@ -215,11 +257,11 @@ void SceneMgr::CreatBullet()
 			}
 		}
 	}
-	if (teama_cool/1000 > 5)
+	if (teama_cool/1000 > 1)
 	{
-		vecx = rand() % CHARACTER_SPEED;
-		vecy = CHARACTER_SPEED - vecx;
-		Objects * newobject = new Objects(1, OBJECT_CHARACTER, true, rand()%500 - 250, rand()%400, 0, vecx, -vecy, 0, building_image);
+		vecx = rand() % CHARACTER_SPEED - CHARACTER_SPEED/2;
+		vecy = CHARACTER_SPEED - abs(vecx);
+		Objects * newobject = new Objects(1, OBJECT_CHARACTER, true, rand()%500 - 250, rand()%400, 0, vecx, -vecy, 0, character_image[0]);
 
 		for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		{
@@ -240,7 +282,7 @@ void SceneMgr::CreatBullet()
 	for(int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		if (m_character[i] && m_character[i]->m_active)
 		{
-			if (m_character[i]->GetCooltime() > 3.0f)
+			if (m_character[i]->GetCooltime() > 1.0f)
 			{
 				vecx = rand() % ARROW_SPEED;
 				vecy = ARROW_SPEED - vecx;

@@ -18,25 +18,22 @@ Objects::Objects(int team, int type, bool active, float x, float y, float z, flo
 	{
 		m_life = 500.0f;
 		size = 100;
-		color = float4(1, 1, 0, 1);
+		color = float4(1, 1, 1, 1);
 	}
 	else if (type == OBJECT_CHARACTER)
 	{
-		m_life = 10.0f;
-		if (m_team == 1)
-			color = float4(1, 0, 0, 1);
-		else
-			color = float4(0, 0, 1, 1);
-		size = 10;
+		m_life = 100.0f;
+		color = float4(1, 1, 1, 1);
+		size = 30;
 	}
 	else if (type == OBJECT_BULLET)
 	{
-		m_life = 20.0f;
+		m_life = 15.0f;
 		if (m_team == 1)
 			color = float4(1, 0, 0, 1);
 		else
 			color = float4(0, 0, 1, 1);
-		size = 2;
+		size = 4;
 	}
 	else if (type == OBJECT_ARROW)
 	{
@@ -45,8 +42,10 @@ Objects::Objects(int team, int type, bool active, float x, float y, float z, flo
 			color = float4(0.5, 0.2, 0.7, 1);
 		else
 			color = float4(1, 1, 0, 1);
-		size = 2;
+		size = 4;
 	}
+
+	m_maxlife = m_life;
 }
 
 Objects::~Objects()
@@ -58,10 +57,16 @@ void Objects::Render(Renderer& g_Renderer)
 {
 	if (m_active)
 	{
-		if (m_type == OBJECT_BUILDING)
-			g_Renderer.DrawTexturedRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, image_id);
+		if (m_type == OBJECT_BUILDING || m_type == OBJECT_CHARACTER)
+		{
+			g_Renderer.DrawTexturedRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, image_id, (float)m_type/10);
+			if (m_team == 1)
+				g_Renderer.DrawSolidRectGauge(m_pos.x, m_pos.y + size / 2 + 5, m_pos.z, size, 5, 1, 0, 0, 1, m_life/m_maxlife, (float)m_type / 10);
+			else
+				g_Renderer.DrawSolidRectGauge(m_pos.x, m_pos.y + size / 2 + 5, m_pos.z, size, 5, 0, 0, 1, 1, m_life / m_maxlife, (float)m_type / 10);
+		}
 		else
-			g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w);
+			g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, (float)m_type / 10);
 	}
 }
 
@@ -96,15 +101,29 @@ void Objects::Setposition(float x, float y, float z)
 
 void Objects::ColiderCheck(float time)
 {
-	if (m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) + size/2 > 250)
-		m_vector3.x = -m_vector3.x;
-	else if(m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) - size/2 < -250)
-		m_vector3.x = -m_vector3.x;
+	if (m_type != OBJECT_ARROW && m_type != OBJECT_BULLET)
+	{
+		if (m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) + size / 2 > 250)
+			m_vector3.x = -m_vector3.x;
+		else if (m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) - size / 2 < -250)
+			m_vector3.x = -m_vector3.x;
 
-	if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) + size/2 > 400)
-		m_vector3.y = -m_vector3.y;
-	else if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) - size/2 < -400)
-		m_vector3.y = -m_vector3.y;
+		if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) + size / 2 > 400)
+			m_vector3.y = -m_vector3.y;
+		else if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) - size / 2 < -400)
+			m_vector3.y = -m_vector3.y;
+	}
+	else
+	{
+		if (m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) + size / 2 > 250)
+			m_active = false;
+		else if (m_vector3.x != 0 && m_pos.x + (m_vector3.x * time * 0.001f) - size / 2 < -250)
+			m_active = false;
+		if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) + size / 2 > 400)
+			m_active = false;
+		else if (m_vector3.y != 0 && m_pos.y + (m_vector3.y * time * 0.001f) - size / 2 < -400)
+			m_active = false;
+	}
 }
 
 void Objects::ActiveOn(bool active)
@@ -136,13 +155,13 @@ float Objects::GetCooltime()
 
 void Objects::SetCooltime()
 {
-	ArrowCooltime = 0;
+	ArrowCooltime = 0.0f;
 }
 
 void Objects::SetStandardColor()
 {
 	if (m_type == OBJECT_BUILDING)
-		color = float4(1, 1, 0, 1);
+		color = float4(1, 1, 1, 1);
 
 	else if (m_type == OBJECT_CHARACTER)
 		color = float4(1, 1, 1, 1);
@@ -152,7 +171,6 @@ void Objects::SetStandardColor()
 
 	else if (m_type == OBJECT_ARROW)
 		color = float4(0, 1, 0, 1);
-
 }
 
 int Objects::GetTeam()
