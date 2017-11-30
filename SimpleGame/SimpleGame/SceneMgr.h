@@ -14,9 +14,10 @@ const int OBJECT_BUILDING = 1;
 const int OBJECT_CHARACTER = 2;
 const int OBJECT_BULLET = 3;
 const int OBJECT_ARROW = 4;
+const int BACKGROUND = 5;
 
 const int ARROW_SPEED = 100;
-const int BULLET_SPEED = 600;
+const int BULLET_SPEED = 100;
 const int CHARACTER_SPEED = 300;
 
 class Objects;
@@ -24,6 +25,7 @@ class Objects;
 class SceneMgr
 {
 private:
+	Objects *back_ground;
 	Objects *m_objects[MAX_OBJECTS_COUNT];
 	Objects *m_character[MAX_CHARACTER_COUNT];
 	Objects *m_bullets[MAX_BULLET_COUNT];
@@ -33,7 +35,7 @@ private:
 	Renderer *m_renderer;
 
 	float teama_cool, teamb_cool;
-	int building_image, character_image[2];
+	int building_image, character_image[2], background_image, particle_image[2];
 	float m_bullet_timer;
 	DWORD m_time_a, m_time_b;
 	float m_deltime;

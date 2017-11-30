@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(500, 800);
-	glutCreateWindow("Game Software Engineering KPU");
+	glutCreateWindow("Network Game");
 
 	glewInit();
 	if (glewIsSupported("GL_VERSION_3_0"))

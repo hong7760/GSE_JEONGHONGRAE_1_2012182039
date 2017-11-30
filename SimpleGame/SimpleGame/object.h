@@ -59,7 +59,8 @@ public:
 	int image_id;
 
 	float m_life, m_maxlife;
-
+	int frames, image_frame;
+	float total_frames;
 	int m_type;
 
 	float ArrowCooltime;

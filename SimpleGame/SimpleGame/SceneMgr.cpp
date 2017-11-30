@@ -8,9 +8,11 @@ SceneMgr::SceneMgr(int x, int y)
 	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
 	
-	character_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\bat.png");
-	character_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\square.png");
-
+	character_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\batSpritesheet.png");
+	character_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\bird_sprite.png");
+	particle_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\particle_puple.png");
+	particle_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\particle_red.png");
+	background_image = m_renderer->CreatePngTexture(".\\Resorce\\space_background.png");
 	for (int i = 0; i < 3; i++) {
 		building_image = m_renderer->CreatePngTexture(".\\Resorce\\castle.png");
 		Objects * newobject = new Objects(1, OBJECT_BUILDING, true, 200 - i*200, 300, 0, 0, 0, 0, building_image);
@@ -23,6 +25,9 @@ SceneMgr::SceneMgr(int x, int y)
 		m_objects[m_currentCount] = newobject;
 		m_currentCount++;
 	}
+
+	Objects * newobject = new Objects(1, BACKGROUND, true, 0, 0, 0, 0, 0, 0, background_image);
+	back_ground = newobject;
 }
 
 SceneMgr::~SceneMgr()
@@ -67,7 +72,7 @@ void SceneMgr::Collion()
 						continue;
 					else if (m_character[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
 					{
-						std::cout << "面倒";
+						//std::cout << "面倒";
 						m_objects[j]->m_life -= m_character[i]->m_life;
 						m_character[i]->m_life = 0;
 						break;
@@ -88,7 +93,7 @@ void SceneMgr::Collion()
 				{
 					if (m_bullets[i]->collision(m_character[j]->m_pos, m_character[j]->size) && m_character[j]->GetTeam() != m_bullets[i]->GetTeam())
 					{
-						std::cout << "面倒";
+						//std::cout << "面倒";
 						m_character[j]->m_life -= m_bullets[i]->m_life;
 						m_bullets[i]->m_life = 0;
 						break;
@@ -105,7 +110,7 @@ void SceneMgr::Collion()
 						continue;
 					else if (m_bullets[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
 					{
-						std::cout << "面倒";
+						//std::cout << "面倒";
 						m_objects[j]->m_life -= m_bullets[i]->m_life;
 						m_bullets[i]->m_life = 0;
 						break;
@@ -126,7 +131,7 @@ void SceneMgr::Collion()
 				{
 					if (m_arrows[i]->collision(m_character[j]->m_pos, m_character[j]->size) && m_character[j]->GetTeam() != m_arrows[i]->GetTeam())
 					{
-						std::cout << "面倒";
+						//std::cout << "面倒";
 						m_character[j]->m_life -= m_arrows[i]->m_life;
 						m_arrows[i]->m_life = 0;
 						break;
@@ -143,7 +148,7 @@ void SceneMgr::Collion()
 						continue;
 					else if (m_arrows[i]->collision(m_objects[j]->m_pos, m_objects[j]->size))
 					{
-						std::cout << "面倒";
+						//std::cout << "面倒";
 						m_objects[j]->m_life -= m_arrows[i]->m_life;
 						m_arrows[i]->m_life = 0;
 						break;
@@ -166,6 +171,7 @@ void SceneMgr::Update()
 	CreatBullet();
 	//std::cout << m_deltime;
 
+	back_ground->Render(*m_renderer);
 	for (int i = 0; i < MAX_BULLET_COUNT; i++)
 		if (m_bullets[i])
 		{
@@ -227,7 +233,7 @@ void SceneMgr::Update()
 void SceneMgr::CreatBullet()
 {
 	int vecx, vecy;
-
+	Objects * newobject;
 	for (int i = 0; i < MAX_OBJECTS_COUNT; i++) {
 		if (m_objects[i] && m_objects[i]->m_active)
 		{
@@ -240,7 +246,10 @@ void SceneMgr::CreatBullet()
 					vecy = -vecy;
 
 				m_objects[i]->SetCooltime();
-				Objects * newobject = new Objects(m_objects[i]->GetTeam(), OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, vecx, vecy, 0, building_image);
+				if(m_objects[i]->GetTeam() == 1)
+					newobject = new Objects(m_objects[i]->GetTeam(), OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, vecx, vecy, 0, particle_image[1]);
+				else 
+					newobject = new Objects(m_objects[i]->GetTeam(), OBJECT_BULLET, true, m_objects[i]->m_pos.x, m_objects[i]->m_pos.y, m_objects[i]->m_pos.z, vecx, vecy, 0, particle_image[0]);
 				for (int j = 0; j < MAX_BULLET_COUNT; j++)
 				{
 					if (!m_bullets[j])
