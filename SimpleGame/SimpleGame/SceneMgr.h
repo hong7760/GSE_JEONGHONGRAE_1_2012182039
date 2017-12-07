@@ -3,7 +3,9 @@
 #include "object.h"
 #include "Renderer.h"
 #include <Windows.h>
+#include "Sound.h"
 #include <math.h>
+#include <mmsystem.h>
 
 const int MAX_OBJECTS_COUNT = 6;
 const int MAX_BULLET_COUNT = 100;
@@ -30,9 +32,11 @@ private:
 	Objects *m_character[MAX_CHARACTER_COUNT];
 	Objects *m_bullets[MAX_BULLET_COUNT];
 	Objects *m_arrows[MAX_ARROW_COUNT];
+	Sound *m_sound;
 	int m_currentCount;
 	int m_currentbullet;
 	Renderer *m_renderer;
+	int m_explosionsound;
 
 	float teama_cool, teamb_cool;
 	int building_image, character_image[2], background_image, particle_image[2];

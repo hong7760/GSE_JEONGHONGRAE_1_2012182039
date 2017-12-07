@@ -7,7 +7,8 @@ SceneMgr::SceneMgr(int x, int y)
 	m_currentCount = 0;
 	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
-	
+	m_sound = new Sound();
+
 	character_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\batSpritesheet.png");
 	character_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\bird_sprite.png");
 	particle_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\particle_puple.png");
@@ -28,6 +29,8 @@ SceneMgr::SceneMgr(int x, int y)
 
 	Objects * newobject = new Objects(1, BACKGROUND, true, 0, 0, 0, 0, 0, 0, background_image);
 	back_ground = newobject;
+
+	m_explosionsound = m_sound->CreateSoundA(".\\Dependencies\\SoundSamples\\explosion.wav");
 }
 
 SceneMgr::~SceneMgr()
@@ -75,6 +78,7 @@ void SceneMgr::Collion()
 						//std::cout << "面倒";
 						m_objects[j]->m_life -= m_character[i]->m_life;
 						m_character[i]->m_life = 0;
+						m_sound->PlaySoundA(m_explosionsound, false, 1.0f);
 						break;
 					}
 					else
@@ -96,6 +100,7 @@ void SceneMgr::Collion()
 						//std::cout << "面倒";
 						m_character[j]->m_life -= m_bullets[i]->m_life;
 						m_bullets[i]->m_life = 0;
+						m_sound->PlaySoundA(m_explosionsound, false, 1.0f);
 						break;
 					}
 					else
@@ -113,6 +118,7 @@ void SceneMgr::Collion()
 						//std::cout << "面倒";
 						m_objects[j]->m_life -= m_bullets[i]->m_life;
 						m_bullets[i]->m_life = 0;
+						m_sound->PlaySoundA(m_explosionsound, false, 1.0f);
 						break;
 					}
 					else
@@ -134,6 +140,7 @@ void SceneMgr::Collion()
 						//std::cout << "面倒";
 						m_character[j]->m_life -= m_arrows[i]->m_life;
 						m_arrows[i]->m_life = 0;
+						m_sound->PlaySoundA(m_explosionsound, false, 1.0f);
 						break;
 					}
 					else
@@ -151,6 +158,7 @@ void SceneMgr::Collion()
 						//std::cout << "面倒";
 						m_objects[j]->m_life -= m_arrows[i]->m_life;
 						m_arrows[i]->m_life = 0;
+						m_sound->PlaySoundA(m_explosionsound, false, 1.0f);
 						break;
 					}
 					else
@@ -228,6 +236,7 @@ void SceneMgr::Update()
 	m_bullet_timer += m_deltime;
 	m_time_a = m_time_b;
 	Collion();
+	m_renderer->DrawText(-50, 370, GLUT_BITMAP_9_BY_15, 1, 1, 1, "Test Text!!!!");
 }
 
 void SceneMgr::CreatBullet()
