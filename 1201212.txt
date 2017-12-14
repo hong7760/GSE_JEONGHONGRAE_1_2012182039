@@ -1,0 +1,15 @@
+Thu Dec 7 15:04:58 2017 +0900 sound and text
+Thu Nov 30 15:04:31 2017 +0900 particle, animation
+Thu Nov 23 14:59:11 2017 +0900 lifegague, bullet rangeout, depth
+Thu Nov 16 15:05:12 2017 +0900 배치 수정, 팀추가, 출돌 수정 ,속도 수정
+Mon Nov 13 14:48:34 2017 +0900 텍스쳐 수정
+Thu Nov 9 14:16:05 2017 +0900 임시 저장
+Mon Nov 6 15:04:29 2017 +0900 eleus time 수정
+Thu Nov 2 15:13:46 2017 +0900 총알 충돌 및 life 구현
+Thu Oct 26 15:24:41 2017 +0900 life, time 추가 but 수정 필요
+Thu Oct 19 15:04:07 2017 +0900 SceneMgr 생성 및 적용
+Thu Oct 12 15:03:21 2017 +0900 Object 이동 및 마우스 클릭
+Wed Oct 11 09:43:30 2017 +0900 Render objects
+Thu Sep 21 14:33:13 2017 +0900 First
+Thu Sep 14 14:55:18 2017 +0900 Add files via upload
+Thu Sep 14 14:03:28 2017 +0900 Initial commit

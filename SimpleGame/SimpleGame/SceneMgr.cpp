@@ -8,12 +8,15 @@ SceneMgr::SceneMgr(int x, int y)
 	m_currentbullet = 0;
 	m_renderer = new Renderer(x, y);
 	m_sound = new Sound();
+	total_frames = 0;
+	m_time_a = timeGetTime();
 
 	character_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\batSpritesheet.png");
 	character_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\bird_sprite.png");
 	particle_image[0] = m_renderer->CreatePngTexture(".\\Resorce\\particle_puple.png");
 	particle_image[1] = m_renderer->CreatePngTexture(".\\Resorce\\particle_red.png");
 	background_image = m_renderer->CreatePngTexture(".\\Resorce\\space_background.png");
+	wheather_image = m_renderer->CreatePngTexture(".\\Resorce\\snow.png");
 	for (int i = 0; i < 3; i++) {
 		building_image = m_renderer->CreatePngTexture(".\\Resorce\\castle.png");
 		Objects * newobject = new Objects(1, OBJECT_BUILDING, true, 200 - i*200, 300, 0, 0, 0, 0, building_image);
@@ -44,7 +47,7 @@ void SceneMgr::AddObject(float x, float y, float z)
 	vecy = CHARACTER_SPEED - abs(vecx);
 	Objects * newobject = new Objects(2, OBJECT_CHARACTER, true, x, y, z, vecx, vecy, 0, character_image[1]);
 
-	if (y < 0 && teamb_cool/1000 > 1.0f) {
+	if (y < 0 && teamb_cool/1000 > 5.0f) {
 		for (int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		{
 			if (!m_character[i])
@@ -232,10 +235,12 @@ void SceneMgr::Update()
 	//			}
 	//		}
 	//	}
+	m_renderer->DrawParticleClimate(0, 0, 0, 1, 1, 1, 1, 1, -0.1, -0.1, wheather_image, total_frames/1000, 0.01);
 
-	m_bullet_timer += m_deltime;
+	m_bullet_timer += m_deltime/1000;
 	m_time_a = m_time_b;
 	Collion();
+	total_frames += m_deltime;
 	m_renderer->DrawText(-50, 370, GLUT_BITMAP_9_BY_15, 1, 1, 1, "Test Text!!!!");
 }
 
@@ -246,7 +251,7 @@ void SceneMgr::CreatBullet()
 	for (int i = 0; i < MAX_OBJECTS_COUNT; i++) {
 		if (m_objects[i] && m_objects[i]->m_active)
 		{
-			if (m_objects[i]->GetCooltime() > 0.5f)
+			if (m_objects[i]->GetCooltime() > 2.0f)
 			{
 				vecx = rand() % BULLET_SPEED - BULLET_SPEED / 2;
 				vecy = BULLET_SPEED - abs(vecx);
@@ -300,7 +305,7 @@ void SceneMgr::CreatBullet()
 	for(int i = 0; i < MAX_CHARACTER_COUNT; i++)
 		if (m_character[i] && m_character[i]->m_active)
 		{
-			if (m_character[i]->GetCooltime() > 1.0f)
+			if (m_character[i]->GetCooltime() > 5.0f)
 			{
 				vecx = rand() % ARROW_SPEED;
 				vecy = ARROW_SPEED - vecx;
@@ -321,4 +326,12 @@ void SceneMgr::CreatBullet()
 				}
 			}
 		}
+}
+
+void SceneMgr::renderer()
+{
+	/*int m_ParticleCount = 100;
+	int m_ParticleVertexConunt = m_ParticleCount * 2 * 3;
+	int m_ParticleCloudCount = 1000;
+	int m_ParticleCloudVertexCount = m_ParticleCloudCount * 2 * 3;*/
 }

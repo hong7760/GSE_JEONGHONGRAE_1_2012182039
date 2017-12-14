@@ -19,7 +19,7 @@ const int OBJECT_ARROW = 4;
 const int BACKGROUND = 5;
 
 const int ARROW_SPEED = 100;
-const int BULLET_SPEED = 100;
+const int BULLET_SPEED = 200;
 const int CHARACTER_SPEED = 300;
 
 class Objects;
@@ -40,8 +40,10 @@ private:
 
 	float teama_cool, teamb_cool;
 	int building_image, character_image[2], background_image, particle_image[2];
+	int wheather_image;
 	float m_bullet_timer;
 	DWORD m_time_a, m_time_b;
+	float total_frames;
 	float m_deltime;
 
 public:
@@ -54,6 +56,8 @@ public:
 	void Update(); // 오브잭트를 update 해주는 함수 (Renderer 포함)
 
 	void AddObject(float x, float y, float z); // 추가할 오브잭트(속도는 -10~10사이의 랜덤값으로 설정해놓음)
+
+	void renderer();
 
 	void CreatBullet();
 };

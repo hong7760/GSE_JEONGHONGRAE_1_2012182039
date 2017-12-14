@@ -11,7 +11,8 @@ Objects::Objects() : m_pos(0,0,0), color(1,1,1,1), m_vector3(0,0,0)
 
 Objects::Objects(int team, int type, bool active, float x, float y, float z, float vectorX, float vectorY, float vectorZ,int image) :
 	m_team(team), m_type(type), m_pos(x, y, z), m_vector3(vectorX, vectorY, vectorZ), color(0, 0, 0, 1), size(10), image_id(image)
-{
+{	
+	total_frames = 0;
 	m_active = active;
 	if (type == OBJECT_BUILDING)
 	{
@@ -32,7 +33,7 @@ Objects::Objects(int team, int type, bool active, float x, float y, float z, flo
 			color = float4(1, 0, 0, 1);
 		else
 			color = float4(0, 0, 1, 1);
-		size = 4;
+		size = 10;
 	}
 	else if (type == OBJECT_ARROW)
 	{
@@ -41,7 +42,7 @@ Objects::Objects(int team, int type, bool active, float x, float y, float z, flo
 			color = float4(0.5, 0.2, 0.7, 1);
 		else
 			color = float4(1, 1, 0, 1);
-		size = 4;
+		size = 10;
 	}
 	else if (type == BACKGROUND)
 	{
@@ -56,6 +57,7 @@ Objects::Objects(int team, int type, bool active, float x, float y, float z, flo
 Objects::~Objects()
 {
 	m_active = false;
+	total_frames = 0;
 }
 
 void Objects::Render(Renderer& g_Renderer)
@@ -90,8 +92,9 @@ void Objects::Render(Renderer& g_Renderer)
 			g_Renderer.DrawTexturedRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, image_id, (float)m_type / 10);
 		else if (m_type == OBJECT_BULLET)
 		{
-			g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, (float)m_type / 10);
-			g_Renderer.DrawParticle(m_pos.x, m_pos.y, m_pos.z, size, 1, 1, 1, 1, (1 + frames) * -m_vector3.x / BULLET_SPEED, (1 + frames) * -m_vector3.y / BULLET_SPEED, image_id, total_frames);
+			g_Renderer.DrawTexturedRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w,image_id, (float)m_type / 10);
+			//g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, (float)m_type / 10);
+			g_Renderer.DrawParticle(m_pos.x, m_pos.y, m_pos.z, 10, 1, 1, 1, 1, (float)(0.5 * -m_vector3.x / BULLET_SPEED), (float)(0.5 * -m_vector3.y / BULLET_SPEED), image_id, total_frames,0.01);
 		}
 		else
 			g_Renderer.DrawSolidRect(m_pos.x, m_pos.y, m_pos.z, size, color.x, color.y, color.z, color.w, (float)m_type / 10);
@@ -118,7 +121,7 @@ void Objects::Update(float time)
 
 void Objects::Setvector(float vectorX, float vectorY, float vectorZ)
 {
-	m_vector3.x = vectorX;
+	m_vector3.x = vectorX;	
 	m_vector3.y = vectorY;
 	m_vector3.z = vectorZ;
 }
